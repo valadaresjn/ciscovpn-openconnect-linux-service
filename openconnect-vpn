@@ -1,0 +1,65 @@
+#!/bin/bash
+#copiar o arquivo para /usr/local/bin/openconnect-vpn
+#atribuir permissões de execucao
+
+#Comandos suportados
+#sudo openconnect-vpn status
+#sudo openconnect-vpn stop
+#sudo openconnect-vpn start
+
+# Configuration
+VPN_SERVER="SERVER"
+VPN_GROUP="GROUP"
+VPN_USER="USER"
+PID_FILE="/var/run/openconnect.pid"
+
+connect_vpn() {
+    echo "Connecting to  VPN $VPN_SERVER ..."
+    # -b roda em background, --pid-file salva o PID
+    sudo openconnect "$VPN_SERVER" \
+        --protocol=anyconnect \
+        --authgroup="$VPN_GROUP" \
+        --user="$VPN_USER" \
+        --background \
+        --pid-file="$PID_FILE"
+
+    if [ $? -eq 0 ]; then
+        echo "✅ VPN Connected."
+    else
+        echo "❌ Failed to connect  VPN."
+    fi
+}
+
+disconnect_vpn() {
+    if [ -f "$PID_FILE" ]; then
+        echo "Disconnecting VPN..."
+        sudo kill "$(cat "$PID_FILE")"
+        sudo rm -f "$PID_FILE"
+        echo "✅VPN Disconnected."
+    else
+        echo "No active VPN connection found."
+    fi
+}
+
+status_vpn() {
+    if [ -f "$PID_FILE" ]; then
+        echo "VPN Active. PID: $(cat $PID_FILE)"
+    else
+        echo "VPN is not connected."
+    fi
+}
+
+case "$1" in
+    start)
+        connect_vpn
+        ;;
+    stop)
+        disconnect_vpn
+        ;;
+    status)
+        status_vpn
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}"
+        ;;
+esac
