@@ -1,8 +1,5 @@
 #!/bin/bash
-#copiar o arquivo para /usr/local/bin/openconnect-vpn
-#atribuir permissões de execucao
-
-#Comandos suportados
+#Supported commands
 #sudo openconnect-vpn status
 #sudo openconnect-vpn stop
 #sudo openconnect-vpn start
@@ -14,7 +11,7 @@ VPN_USER="USER"
 PID_FILE="/var/run/openconnect.pid"
 
 connect_vpn() {
-    echo "Connecting to  VPN $VPN_SERVER ..."
+    echo "Connecting to VPN $VPN_SERVER ..."
     # -b roda em background, --pid-file salva o PID
     sudo openconnect "$VPN_SERVER" \
         --protocol=anyconnect \
@@ -26,7 +23,7 @@ connect_vpn() {
     if [ $? -eq 0 ]; then
         echo "✅ VPN Connected."
     else
-        echo "❌ Failed to connect  VPN."
+        echo "❌ Failed to connect VPN."
     fi
 }
 
